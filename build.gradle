@@ -1,0 +1,13 @@
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'eclipse'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'com.mpatric:mp3agic:0.9.0'
+}
+
+mainClassName = 'nl.nicolascode.id3.disc2track.App'
