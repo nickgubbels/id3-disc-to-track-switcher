@@ -8,6 +8,17 @@ repositories {
 
 dependencies {
     compile 'com.mpatric:mp3agic:0.9.0'
+    compile 'commons-cli:commons-cli:1.4'
+    compile 'commons-io:commons-io:2.5'
+    compile 'com.google.inject:guice:4.1.0'
 }
+
+run {
+    if(project.hasProperty("appArgs")) {
+        args Eval.me(appArgs)
+    }
+}
+
+sourceCompatibility = 1.8
 
 mainClassName = 'nl.nicolascode.id3.disc2track.App'
