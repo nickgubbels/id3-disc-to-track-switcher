@@ -12,3 +12,12 @@ build/
 .settings/
 .classpath
 .project
+
+#IntelliJ files
+.idea/
+*.iml
+*.ipr
+*.iws
+
+#Mac OS files
+.DS_Store
