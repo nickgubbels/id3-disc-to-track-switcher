@@ -1,13 +1,13 @@
 package nl.nicolascode.id3.disc2track.cli;
 
-import java.util.Iterator;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
@@ -44,16 +44,36 @@ public class CLIHandler
             boolean hasSettings = false;
             final Settings settings = new Settings();
 
-            final Iterator<Map.Entry<String, BiConsumer<Settings, String>>> optionsIterator = cliOptions
-                            .getOptionsIterator();
-            while (optionsIterator.hasNext())
+            for (final Option option : line.getOptions())
             {
-                final Map.Entry<String, BiConsumer<Settings, String>> current = optionsIterator.next();
-                if (line.hasOption(current.getKey()))
+                hasSettings = true;
+
+                if (option.hasArg())
                 {
-                    final String value = line.getOptionValue(current.getKey());
-                    hasSettings = true;
-                    current.getValue().accept(settings, value != null ? value : "true");
+                    final String value = option.getValue();
+                    final Optional<BiConsumer<Settings, String>> optionHandler = cliOptions
+                                    .getParametrizedOptionHandler(option.getLongOpt());
+                    if (value != null && optionHandler.isPresent())
+                    {
+                        optionHandler.get().accept(settings, value);
+                    }
+                    else
+                    {
+                        // ToDo: error handling
+                    }
+                }
+                else
+                {
+                    final Optional<Consumer<Settings>> optionHandler = cliOptions
+                                    .getFlagOptionHandler(option.getLongOpt());
+                    if (optionHandler.isPresent())
+                    {
+                        optionHandler.get().accept(settings);
+                    }
+                    else
+                    {
+                        // ToDo: error handling
+                    }
                 }
             }
 

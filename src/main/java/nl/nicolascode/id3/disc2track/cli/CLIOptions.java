@@ -1,28 +1,55 @@
 package nl.nicolascode.id3.disc2track.cli;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import nl.nicolascode.id3.disc2track.Settings;
 
 public class CLIOptions
 {
-    private final Map<String, BiConsumer<Settings, String>> options;
+    private final Map<String, Consumer<Settings>> flagOptions;
+    private final Map<String, BiConsumer<Settings, String>> optionsWithParameters;
 
     public CLIOptions()
     {
-        this.options = new HashMap<>();
+        this.flagOptions = new HashMap<>();
+        this.optionsWithParameters = new HashMap<>();
     }
 
-    public void addOption(final String option, final BiConsumer<Settings, String> methodToApplyForOption)
+    public void addFlagOption(final String option, final Consumer<Settings> methodToApplyForOption)
     {
-        options.put(option, methodToApplyForOption);
+        flagOptions.put(option, methodToApplyForOption);
     }
 
-    public Iterator<Map.Entry<String, BiConsumer<Settings, String>>> getOptionsIterator()
+    public void addOptionWithArgument(final String option, final BiConsumer<Settings, String> methodToApplyForOption)
     {
-        return options.entrySet().iterator();
+        optionsWithParameters.put(option, methodToApplyForOption);
+    }
+
+    public Optional<Consumer<Settings>> getFlagOptionHandler(final String option)
+    {
+        if (flagOptions.containsKey(option))
+        {
+            return Optional.of(flagOptions.get(option));
+        }
+        else
+        {
+            return Optional.empty();
+        }
+    }
+
+    public Optional<BiConsumer<Settings, String>> getParametrizedOptionHandler(final String option)
+    {
+        if (optionsWithParameters.containsKey(option))
+        {
+            return Optional.of(optionsWithParameters.get(option));
+        }
+        else
+        {
+            return Optional.empty();
+        }
     }
 }

@@ -36,20 +36,20 @@ public class Settings
     }
 
     @CLIOption(opt = "f", longOpt = "forced", hasArguments = false, description = "Force adding the disc# in front of the track#.")
-    public void setIsForcedSettings(final String isForced)
+    public void setIsForcedSettings(final boolean isForced)
     {
-        force = isForced.compareToIgnoreCase("true") == 0;
+        force = isForced;
     }
 
     @CLIOption(opt = "p", longOpt = "print", hasArguments = false, description = "Print current disc# and track# values per file. This does not alter any file.")
-    public void setPrintOnlySettings(final String isPrintOnly)
+    public void setPrintOnlySettings(final boolean isPrintOnly)
     {
-        printOnly = isPrintOnly.compareToIgnoreCase("true") == 0;
+        printOnly = isPrintOnly;
     }
 
     @CLIOption(opt = "r", longOpt = "remove", hasArguments = false, description = "Remove disc# from track# when present.")
-    public void setRemoveOption(final String remove)
+    public void setRemoveOption(final boolean remove)
     {
-        this.remove = remove.compareToIgnoreCase("true") == 0;
+        this.remove = remove;
     }
 }

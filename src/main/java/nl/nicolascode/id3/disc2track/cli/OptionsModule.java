@@ -33,18 +33,36 @@ public class OptionsModule implements Module
             {
                 options.addOption(cliOption.opt(), cliOption.longOpt(), cliOption.hasArguments(),
                                 cliOption.description());
-                cliOptions.addOption(cliOption.longOpt(), (settings, value) ->
-                    {
-                        try
+                if (cliOption.hasArguments())
+                {
+                    cliOptions.addOptionWithArgument(cliOption.longOpt(), (settings, value) ->
                         {
-                            m.invoke(settings, value);
-                        }
-                        catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
+                            try
+                            {
+                                m.invoke(settings, value);
+                            }
+                            catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
+                            {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                            }
+                        });
+                }
+                else
+                {
+                    cliOptions.addFlagOption(cliOption.longOpt(), (settings) ->
                         {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
-                    });
+                            try
+                            {
+                                m.invoke(settings, Boolean.TRUE);
+                            }
+                            catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
+                            {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                            }
+                        });
+                }
             }
         }
 
