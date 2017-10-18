@@ -2,9 +2,11 @@ package nl.nicolascode.id3.disc2track;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Optional;
 
-import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 
 import com.mpatric.mp3agic.ID3v2;
 import com.mpatric.mp3agic.InvalidDataException;
@@ -14,6 +16,7 @@ import com.mpatric.mp3agic.UnsupportedTagException;
 
 public class Id3TagSwitcher
 {
+    private final static String EXTENSION = "mp3";
     private final Settings settings;
 
     public Id3TagSwitcher(final Settings settings)
@@ -24,31 +27,23 @@ public class Id3TagSwitcher
     public void doWork()
     {
         final File directory = new File(this.settings.getDirectory());
-        fileLoop(directory);
-    }
+        final Collection<File> allFiles = FileUtils.listFiles(directory, new FileFilterByExtension("mp3"),
+                        TrueFileFilter.INSTANCE);
 
-    private void fileLoop(final File file)
-    {
-        if (!file.exists())
+        if (allFiles.size() == 0)
         {
-            // ToDo: error handling.
             return;
         }
 
-        if (file.isDirectory())
+        int count = 0;
+        printProgress(count, allFiles.size());
+        for (final File file : allFiles)
         {
-            for (final File folderEntry : file.listFiles())
-            {
-                fileLoop(folderEntry);
-            }
+            handleSingleFile(file);
+            count++;
+            printProgress(count, allFiles.size());
         }
-        else
-        {
-            if (isMp3File(file))
-            {
-                handleSingleFile(file);
-            }
-        }
+        System.out.println();
     }
 
     private void handleSingleFile(final File file)
@@ -68,8 +63,8 @@ public class Id3TagSwitcher
 
                     if (settings.isPrintOnly())
                     {
-                        System.out.printf("%s: [disc: %s, track: %s, newTrack: %s]\r\n", file.getAbsolutePath(), discNr,
-                                        trackNr, newTrackNr.orElse(trackNr));
+                        System.out.printf("\r%s: [disc: %s, track: %s, newTrack: %s]\r\n", file.getAbsolutePath(),
+                                        discNr, trackNr, newTrackNr.orElse(trackNr));
                     }
                     else if (newTrackNr.isPresent())
                     {
@@ -142,8 +137,34 @@ public class Id3TagSwitcher
         }
     }
 
-    private static boolean isMp3File(final File file)
+    private static void printProgress(final int current, final int total)
     {
-        return file.isFile() && FilenameUtils.getExtension(file.getAbsolutePath()).compareToIgnoreCase("mp3") == 0;
+        final int progressBarSize = 50;
+        final int fillNumber = (current * progressBarSize) / total;
+        final boolean finished = current == total;
+
+        final StringBuilder builder = new StringBuilder();
+        builder.append("\r[");
+
+        for (int i = 0; i < fillNumber - 1; i++)
+        {
+            builder.append("=");
+        }
+
+        builder.append(finished ? "=" : ">");
+
+        for (int i = 0; i < progressBarSize - fillNumber; i++)
+        {
+            builder.append(" ");
+        }
+
+        builder.append("] ");
+
+        builder.append(current);
+        builder.append("/");
+        builder.append(total);
+
+        System.out.print(builder.toString());
     }
+
 }
