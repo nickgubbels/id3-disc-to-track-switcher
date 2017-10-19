@@ -27,7 +27,7 @@ public class Id3TagSwitcher
     public void doWork()
     {
         final File directory = new File(this.settings.getDirectory());
-        final Collection<File> allFiles = FileUtils.listFiles(directory, new FileFilterByExtension("mp3"),
+        final Collection<File> allFiles = FileUtils.listFiles(directory, new FileFilterByExtension(EXTENSION),
                         TrueFileFilter.INSTANCE);
 
         if (allFiles.size() == 0)
@@ -166,5 +166,4 @@ public class Id3TagSwitcher
 
         System.out.print(builder.toString());
     }
-
 }
