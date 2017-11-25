@@ -14,6 +14,8 @@ import com.mpatric.mp3agic.Mp3File;
 import com.mpatric.mp3agic.NotSupportedException;
 import com.mpatric.mp3agic.UnsupportedTagException;
 
+import nl.nicolascode.id3.disc2track.cli.ProgressBar;
+
 public class Id3TagSwitcher
 {
     private final static String EXTENSION = "mp3";
@@ -35,13 +37,13 @@ public class Id3TagSwitcher
             return;
         }
 
-        int count = 0;
-        printProgress(count, allFiles.size());
+        final ProgressBar progressBar = new ProgressBar(50, 0, allFiles.size());
+        progressBar.printProgress(System.out);
         for (final File file : allFiles)
         {
             handleSingleFile(file);
-            count++;
-            printProgress(count, allFiles.size());
+            progressBar.increment();
+            progressBar.printProgress(System.out);
         }
         System.out.println();
     }
@@ -135,35 +137,5 @@ public class Id3TagSwitcher
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-    }
-
-    private static void printProgress(final int current, final int total)
-    {
-        final int progressBarSize = 50;
-        final int fillNumber = (current * progressBarSize) / total;
-        final boolean finished = current == total;
-
-        final StringBuilder builder = new StringBuilder();
-        builder.append("\r[");
-
-        for (int i = 0; i < fillNumber - 1; i++)
-        {
-            builder.append("=");
-        }
-
-        builder.append(finished ? "=" : ">");
-
-        for (int i = 0; i < progressBarSize - fillNumber; i++)
-        {
-            builder.append(" ");
-        }
-
-        builder.append("] ");
-
-        builder.append(current);
-        builder.append("/");
-        builder.append(total);
-
-        System.out.print(builder.toString());
     }
 }
